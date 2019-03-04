@@ -20,7 +20,7 @@ def print_usage():
                 --token=        -t      Specify access token to access private repositories
                 --dir=          -d      Specify a different working directory to clone into
                 --help          -h      Print this usage help
-                --remote        -r      Specify custom gitlab Url
+                --remote=       -r      Specify custom gitlab Url
             Options not recognized by clonelab will be passed on to git 
             """)
 
@@ -105,7 +105,7 @@ def main(argv):
     opts = []
     args = []
     try:
-        opts, args = getopt.getopt(argv, "hpt:d:", ["help", "public-only", "token=", "dir="])
+        opts, args = getopt.getopt(argv, "hpt:d:", ["help", "public-only", "token=", "dir=", "remote="])
     except getopt.GetoptError as err:
         print("Error:" + str(err))
     
