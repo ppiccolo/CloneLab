@@ -64,7 +64,7 @@ def clone_group(base_url, token_segment, group, git_options, parent_dir="."):
             print("\nEntering project " + project['name'])
             p = subprocess.Popen(['git', 'pull']+git_options, cwd=project_dir)
         else:
-            p = subprocess.Popen(['git', 'clone', project['http_url_to_repo']]+git_options, cwd=working_dir)
+            p = subprocess.Popen(['git', 'clone', project['ssh_url_to_repo']]+git_options, cwd=working_dir)
         p.wait()
 
     for subgroup in subgroups:
