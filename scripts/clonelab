@@ -65,7 +65,7 @@ def clone_group(base_url, token_segment, group, git_options, parent_dir=".", ssh
             print("\nEntering project " + project['name'])
             p = subprocess.Popen(['git', 'pull']+git_options, cwd=project_dir)
         else:
-            git_url = "ssh://{0}".format(project['ssh_url_to_repo'].replace(":", ":{0}".format(ssh_port)))
+            git_url = "ssh://{0}".format(project['ssh_url_to_repo'].replace(":", ":{0}/".format(ssh_port)))
             print("\n cloning from {0}".format(git_url));
             p = subprocess.Popen(['git', 'clone', git_url]+git_options, cwd=working_dir)
         p.wait()
