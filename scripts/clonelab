@@ -20,6 +20,7 @@ def print_usage():
                 --token=        -t      Specify access token to access private repositories
                 --dir=          -d      Specify a different working directory to clone into
                 --help          -h      Print this usage help
+                --remote        -r      Specify custom gitlab Url
             Options not recognized by clonelab will be passed on to git 
             """)
 
@@ -110,7 +111,8 @@ def main(argv):
     
     access_token = None
     git_options = []
-    base_url = 'https://gitlab.com/api/v4/'
+    api_version = 'api/v4/'
+    base_url = 'https://gitlab.com/{0}'.format(api_version)
     working_dir = "."
     public_only = False
 
@@ -124,6 +126,8 @@ def main(argv):
             access_token = arg
         elif opt == '-d' or opt == '--dir':
             working_dir = os.path.abspath(arg) if arg[0] != '~' else os.path.expanduser(arg)
+        elif opt == '-r' or opt == '--remote':
+            base_url = "{0}/{1}".format(arg, api_version)
         else:
             git_options.extend([opt,  arg])
 
