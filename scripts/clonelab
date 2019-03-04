@@ -108,7 +108,7 @@ def main(argv):
     opts = []
     args = []
     try:
-        opts, args = getopt.getopt(argv, "hpt:d:", ["help", "public-only", "token=", "dir=", "remote=", "ssh_port"])
+        opts, args = getopt.getopt(argv, "hpt:d:", ["help", "public-only", "token=", "dir=", "remote=", "ssh_port="])
     except getopt.GetoptError as err:
         print("Error:" + str(err))
     
