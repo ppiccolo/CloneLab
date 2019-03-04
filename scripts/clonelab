@@ -21,6 +21,7 @@ def print_usage():
                 --dir=          -d      Specify a different working directory to clone into
                 --help          -h      Print this usage help
                 --remote=       -r      Specify custom gitlab Url
+                --ssh_port=     -s      Specify custom ssh gitlab port               
             Options not recognized by clonelab will be passed on to git 
             """)
 
@@ -46,7 +47,7 @@ def get_group(base_url, token_segment, namespace):
     return group 
 
 
-def clone_group(base_url, token_segment, group, git_options, parent_dir="."):
+def clone_group(base_url, token_segment, group, git_options, parent_dir=".", ssh_port=22):
     subgroups_url = base_url + "groups/" + str(group['id']) + "/subgroups?" + token_segment
     projects_url = base_url + "groups/" + str(group['id']) + "/projects?" + token_segment
     
@@ -64,14 +65,14 @@ def clone_group(base_url, token_segment, group, git_options, parent_dir="."):
             print("\nEntering project " + project['name'])
             p = subprocess.Popen(['git', 'pull']+git_options, cwd=project_dir)
         else:
-            git_url = project['ssh_url_to_repo']
+            git_url = "ssh://{0}".format(project['ssh_url_to_repo'].replace(":", ":{0}".format(ssh_port)))
             print("\n cloning from {0}".format(git_url));
             p = subprocess.Popen(['git', 'clone', git_url]+git_options, cwd=working_dir)
         p.wait()
 
     for subgroup in subgroups:
         print("\nEntering group " + subgroup['name'])
-        clone_group(base_url, token_segment, subgroup, git_options,  working_dir)
+        clone_group(base_url, token_segment, subgroup, git_options,  working_dir, ssh_port)
 
 
 def get_token_from_file(path):
@@ -107,7 +108,7 @@ def main(argv):
     opts = []
     args = []
     try:
-        opts, args = getopt.getopt(argv, "hpt:d:", ["help", "public-only", "token=", "dir=", "remote="])
+        opts, args = getopt.getopt(argv, "hpt:d:", ["help", "public-only", "token=", "dir=", "remote=", "ssh_port"])
     except getopt.GetoptError as err:
         print("Error:" + str(err))
     
@@ -115,6 +116,7 @@ def main(argv):
     git_options = []
     api_version = 'api/v4/'
     base_url = 'https://gitlab.com/{0}'.format(api_version)
+    ssh_port=22
     working_dir = "."
     public_only = False
 
@@ -130,6 +132,8 @@ def main(argv):
             working_dir = os.path.abspath(arg) if arg[0] != '~' else os.path.expanduser(arg)
         elif opt == '-r' or opt == '--remote':
             base_url = "{0}/{1}".format(arg, api_version)
+        elif opt == '-s' or opt == '--ssh_port':
+            ssh_port = arg
         else:
             git_options.extend([opt,  arg])
 
@@ -159,7 +163,7 @@ def main(argv):
         print("Group " + args[0] + " not found.")
         return
 
-    clone_group(base_url, token_segment, group, git_options, working_dir)
+    clone_group(base_url, token_segment, group, git_options, working_dir, ssh_port)
 
 
 if __name__ == "__main__":
